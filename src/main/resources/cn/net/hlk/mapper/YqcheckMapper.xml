@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.net.hlk.data.mapper.YqcheckMapper">
+
+	 <!--表名 -->
+	<sql id="tableName">
+		yqcheck
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="field">
+		check_id,
+		optargetId,
+		dataType,
+		relationId,
+		checkId,
+		checkException,
+		locationInfo,
+		policeName,
+		policeCode,
+		policeIdcard,
+		locationId,
+		locationName,
+		imei,
+		idcardInfo,
+		name,
+		sex,
+		idcard,
+		address,
+		photo,
+		faceInfo,
+		cardCompareResults,
+		carInfo,
+		paintRealInfo,
+		yiqingInfo,
+		licensePlateNo,
+		tel,
+		fromAddr,
+		toAddr,
+		inorout,
+		tiwen,
+		txrs,
+		checkInfo,
+		upladmessage,
+		visiable,
+		updateuser,
+		updatetime,
+		createuser,
+		createtime
+
+ 	</sql>
+ 	
+ 	<!-- 查询专用 -->
+ 	<sql id="fields">
+ 		check_id,
+		optargetId,
+		dataType,
+		relationId,
+		checkId,
+		checkException,
+		locationInfo,
+		policeName,
+		policeCode,
+		policeIdcard,
+		locationId,
+		locationName,
+		imei,
+		idcardInfo,
+		name,
+		sex,
+		idcard,
+		address,
+		photo,
+		faceInfo,
+		cardCompareResults,
+		carInfo,
+		paintRealInfo,
+		yiqingInfo,
+		licensePlateNo,
+		tel,
+		fromAddr,
+		toAddr,
+		inorout,
+		tiwen,
+		txrs,
+		checkInfo,
+		upladmessage,
+		visiable,
+		updateuser,
+		updatetime,
+		createuser,
+		createtime
+ 	</sql>
+ 	
+ 	<!-- 关联查询字段 -->
+ 	<sql id="fieldc">
+		check_id,
+		optargetId,
+		dataType,
+		relationId,
+		checkId,
+		checkException,
+		locationInfo,
+		policeName,
+		policeCode,
+		policeIdcard,
+		locationId,
+		locationName,
+		imei,
+		idcardInfo,
+		name,
+		sex,
+		idcard,
+		address,
+		photo,
+		faceInfo,
+		cardCompareResults,
+		carInfo,
+		paintRealInfo,
+		yiqingInfo,
+		licensePlateNo,
+		tel,
+		fromAddr,
+		toAddr,
+		inorout,
+		tiwen,
+		txrs,
+		checkInfo,
+		upladmessage,
+		visiable,
+		updateuser,
+		updatetime,
+		createuser,
+		createtime
+ 	</sql>
+ 	<!-- 添加字段 -->
+ 	<sql id="insertfield">
+		check_id,
+		"optargetId",
+		"dataType",
+		"relationId",
+		"checkId",
+		"checkException",
+		"locationInfo",
+		"policeName",
+		"policeCode",
+		"policeIdcard",
+		"locationId",
+		"locationName",
+		imei,
+		"idcardInfo",
+		name,
+		sex,
+		idcard,
+		address,
+		photo,
+		"faceInfo",
+		"cardCompareResults",
+		"carInfo",
+		"paintRealInfo",
+		"yiqingInfo",
+		"licensePlateNo",
+		tel,
+		"fromAddr",
+		"toAddr",
+		inorout,
+		tiwen,
+		txrs,
+		"checkInfo",
+		upladmessage,
+		visiable,
+		updateuser,
+		updatetime,
+		createuser,
+		createtime
+ 	</sql>
+ 	<!-- 添加值 -->
+ 	<sql id="insertvalue">
+		#{check_id},
+		#{optargetId},
+		#{dataType}::integer,
+		#{relationId},
+		#{checkId},
+		#{checkException},
+		#{locationInfo}::jsonb,
+		#{policeName},
+		#{policeCode},
+		#{policeIdcard},
+		#{locationId},
+		#{locationName},
+		#{imei},
+		#{idcardInfo}::jsonb,
+		#{name},
+		#{sex},
+		#{idcard},
+		#{address},
+		#{photo},
+		#{faceInfo}::jsonb,
+		#{cardCompareResults}::integer,
+		#{carInfo}::jsonb,
+		#{paintRealInfo}::jsonb,
+		#{yiqingInfo}::jsonb,
+		#{licensePlateNo},
+		#{tel},
+		#{fromAddr},
+		#{toAddr},
+		#{inorout},
+		#{tiwen},
+		#{txrs},
+		#{checkInfo}::jsonb,
+		#{upladmessage}::jsonb,
+		1,
+		#{policeName},
+		now(),
+		#{policeName},
+		now()
+ 	</sql>
+ 	
+ 	<!-- 现场处罚添加 -->
+	<insert id="insertYqcheck" parameterType="pd" >
+		insert into 
+		<include refid="tableName"></include>
+			(
+		<include refid="insertfield"></include>
+			) values (
+		<include refid="insertvalue"></include>
+			)
+	</insert>
+	
+
+</mapper>
