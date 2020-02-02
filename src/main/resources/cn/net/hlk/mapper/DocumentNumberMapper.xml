@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.net.hlk.data.mapper.DocumentNumberMapper">
+
+	 <!--表名 -->
+	<sql id="tableName">
+		document_number
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="field">
+		doc_number,
+		type,
+		CASE type when 1 then '非现场执法' when 2 then '现场简易处罚' when 3 then '现场强制措施'
+		else '无' end as typemc,
+		police_unit_code,
+		police_name,
+		police_idcard,
+		police_number,
+		state,
+		CASE state when 0 then '未使用' when 1 then '被占用' when 2 then '已使用'
+		else '无' end as statemc
+
+ 	</sql>
+ 	
+ 	<!-- 关联查询字段 -->
+ 	<sql id="fieldc">
+		d.doc_number,
+		d.type,
+		d.police_unit_code,
+		d.police_name,
+		d.police_idcard,
+		d.police_number,
+		d.state
+ 	</sql>
+ 	<!-- 添加字段 -->
+ 	<sql id="insertfield">
+		doc_number,
+		type,
+		police_unit_code,
+		police_name,
+		police_idcard,
+		police_number,
+		state
+ 	</sql>
+ 	<!-- 添加值 -->
+ 	<sql id="insertvalue">
+		#{doc_number},
+		#{type}::integer,
+		#{police_unit_code},
+		#{police_name},
+		#{police_idcard},
+		#{police_number},
+		0
+ 	</sql>
+ 	
+ 	<!-- 文书编号添加 -->
+	<insert id="insertDocumentNumber" parameterType="pd" >
+		insert into 
+		<include refid="tableName"></include>
+			(
+		<include refid="insertfield"></include>
+			) values (
+		<include refid="insertvalue"></include>
+			)
+	</insert>
+	
+	<!-- 文书编号修改 -->
+	<update id="updateDocumentNumber" parameterType="pd">
+		update 
+		<include refid="tableName"></include> 
+		<set>
+			<if test="state != null  ">
+				state = #{state}::integer,
+			</if>
+		</set>
+		where doc_number = #{doc_number}
+	</update>
+	
+	<!--文书编号查询-->
+	<select id="getDocumentNumberSearchPgListPage" parameterType="page" resultType="pd">
+		select 
+		<include refid="field"></include>
+		from  <include refid="tableName"></include>  
+		where 1=1
+		<!-- 文书编号 -->
+		<if test="pd.doc_number != null and pd.doc_number != '' ">
+			and doc_number like CONCAT(CONCAT('%',#{pd.doc_number}),'%')
+		</if>
+		<!-- 处罚类型 -->
+		<if test="pd.type != null ">
+			and type = #{pd.type}::integer
+		</if>
+		<!-- 所属机构 -->
+		<if test="pd.police_unit_code != null and pd.police_unit_code != '' ">
+			and police_unit_code = #{pd.police_unit_code}
+		</if>
+		<!-- 状态 -->
+		<if test="pd.state != null ">
+			and state = #{pd.state}::integer
+		</if>
+		ORDER BY doc_number DESC
+	</select>
+	
+	<!-- 验证文书编号区间唯一 -->
+	<select id="verificationOnly" parameterType="pd" resultType="java.lang.String">
+		select 
+		doc_number
+		from  <include refid="tableName"></include>  
+		where 1=1 
+		and doc_number in ( #{doc_number_start1},#{doc_number_end1})
+	</select>
+	
+	
+	<!-- 文书编号区间段添加 -->
+	<insert id="insertContinuousDocumentNumber" parameterType="pd" >
+	<!-- 	insert into 
+		<include refid="tableName"></include>
+			(
+		<include refid="insertfield"></include>
+			) 
+		SELECT * from (
+		select concat(#{region_coding},generate_series( (#{doc_number_start}::integer),(#{doc_number_end}::integer),1) ) as  doc_number,#{type} as type, #{police_unit_code} as police_unit_code,
+		#{police_name} as police_name,#{police_idcard} as police_idcard,#{police_number} as police_number,0 as state
+		) t -->
+		
+		insert into 
+		<include refid="tableName"></include>
+			(
+		<include refid="insertfield"></include>
+			) values 
+        <foreach item="item" index="index" collection="documentNumberList" open="" separator="," close="">
+           (#{documentNumberList[${index}].doc_number},#{documentNumberList[${index}].type} , #{documentNumberList[${index}].police_unit_code} ,
+		#{documentNumberList[${index}].police_name} ,#{documentNumberList[${index}].police_idcard} ,#{documentNumberList[${index}].police_number},#{documentNumberList[${index}].state})
+           </foreach>
+		
+	</insert>
+	
+</mapper>

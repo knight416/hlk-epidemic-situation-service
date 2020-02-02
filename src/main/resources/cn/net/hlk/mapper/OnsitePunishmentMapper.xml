@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.net.hlk.data.mapper.OnsitePunishmentMapper">
+
+	 <!--表名 -->
+	<sql id="tableName">
+		t_traffic_police_onsite_punishment
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="field">
+		onsite_punishment_id,
+		punishment_police,
+		punishment_type,
+		jdsbh,
+		pzbh,
+		wslb,
+		qzcs,
+		wfqy,
+		wfxw,
+		jtfs,
+		wfsj,
+		zqmj,
+		fxjg,
+		cfxx,
+		jsjqbj,
+		sgdj,
+		other_message,
+		gps_point,
+		print_jds,
+		createuser,
+		createtime,
+		updateuser,
+		updatetime,
+		visibale,
+		illegal_vehicle_information,
+		illegal_driver_information,
+		upload_message
+ 	</sql>
+ 	
+ 	<!-- 查询专用 -->
+ 	<sql id="fields">
+ 		onsite_punishment_id,
+		jdsbh,
+		CASE punishment_type when 0 then '简易处罚' when 1 then '强制措施' 
+		else '无' end as punishment_typemc,
+		to_char(wfsj,'YYYY-MM-DD HH24:MI:SS') AS wfsj ,
+		zqmj,
+		fxjg,
+		illegal_vehicle_information ->> 'hpzl' as hpzl,
+		illegal_vehicle_information ->> 'hphm' as hphm,
+		illegal_vehicle_information ->> 'jdcsyr' as jdcsyr,
+		illegal_vehicle_information ->> 'wzsm' as wzsm,
+		wfxw ->> 'wfxw' as wfxw,
+		illegal_driver_information ->> 'dsr' as dsr,
+		illegal_driver_information ->> 'jszh' as jszh,
+		CASE print_jds when 0 then '未上传' when 1 then '已上传' 
+		else '无' end as print_jdsmc,
+		print_jds 
+ 	</sql>
+ 	
+ 	<!-- 关联查询字段 -->
+ 	<sql id="fieldc">
+		o.onsite_punishment_id,
+		o.punishment_police,
+		o.punishment_type,
+		o.jdsbh,
+		o.pzbh,
+		o.wslb,
+		o.qzcs,
+		o.wfqy,
+		o.wfxw,
+		o.jtfs,
+		o.wfsj,
+		o.zqmj,
+		o.fxjg,
+		o.cfxx,
+		o.jsjqbj,
+		o.sgdj,
+		o.other_message,
+		o.gps_point,
+		o.print_jds,
+		o.createuser,
+		o.createtime,
+		o.updateuser,
+		o.updatetime,
+		o.visibale,
+		o.illegal_vehicle_information,
+		o.illegal_driver_information,
+		o.upload_message
+ 	</sql>
+ 	<!-- 添加字段 -->
+ 	<sql id="insertfield">
+		onsite_punishment_id,
+		punishment_police,
+		punishment_type,
+		jdsbh,
+		pzbh,
+		wslb,
+		qzcs,
+		wfqy,
+		wfxw,
+		jtfs,
+		wfsj,
+		zqmj,
+		fxjg,
+		cfxx,
+		jsjqbj,
+		sgdj,
+		other_message,
+		gps_point,
+		print_jds,
+		createuser,
+		createtime,
+		updateuser,
+		updatetime,
+		visibale,
+		illegal_vehicle_information,
+		illegal_driver_information,
+		upload_message
+ 	</sql>
+ 	<!-- 添加值 -->
+ 	<sql id="insertvalue">
+		#{onsite_punishment_id},
+		#{punishment_police}::jsonb,
+		#{punishment_type}::integer,
+		#{jdsbh},
+		#{pzbh},
+		#{wslb},
+		#{qzcs}::jsonb,
+		#{wfqy}::jsonb,
+		#{wfxw}::jsonb,
+		#{jtfs},
+		TO_TIMESTAMP(#{wfsj}/1000),
+		#{zqmj},
+		#{fxjg},
+		#{cfxx}::jsonb,
+		#{jsjqbj},
+		#{sgdj},
+		#{other_message}::jsonb,
+		#{gps_point},
+		#{print_jds}::integer,
+		#{updateuser},
+		now(),
+		#{updateuser},
+		now(),
+		1,
+		#{illegal_vehicle_information}::jsonb,
+		#{illegal_driver_information}::jsonb,
+		#{upload_message}::jsonb
+ 	</sql>
+ 	
+ 	<!-- 现场处罚添加 -->
+	<insert id="insertOnsitePunishment" parameterType="pd" >
+		insert into 
+		<include refid="tableName"></include>
+			(
+		<include refid="insertfield"></include>
+			) values (
+		<include refid="insertvalue"></include>
+			)
+	</insert>
+	
+	<!-- 现场处罚修改 -->
+	<update id="updateOnsitePunishment" parameterType="pd">
+		update 
+		<include refid="tableName"></include> 
+		<set>
+			<if test="visibale != null  ">
+				visibale = #{visibale}::integer,
+			</if>
+			<if test="print_jds != null  ">
+				print_jds = #{print_jds}::integer,
+			</if>
+		</set>
+		where onsite_punishment_id = #{onsite_punishment_id}
+	</update>
+	
+	<!--现场处罚查询-->
+	<select id="getOnsitePunishmentSearchPgListPage" parameterType="page" resultType="pd">
+		select 
+		<include refid="fields"></include>
+		from  <include refid="tableName"></include>  
+		where 1=1
+		<!-- 现场处罚id -->
+		<if test="pd.onsite_punishment_id != null and pd.onsite_punishment_id != '' ">
+			and onsite_punishment_id = #{pd.onsite_punishment_id}
+		</if>
+		<!-- 处罚类型 -->
+		<if test="pd.punishment_type != null ">
+			and punishment_type = #{pd.punishment_type}::integer
+		</if>
+		<!-- 民警姓名 -->
+		<if test="pd.police_name != null and pd.police_name != '' ">
+			and punishment_police ->> 'police_name'  like CONCAT(CONCAT('%',#{pd.police_name}),'%')
+		</if>
+		<!-- 号牌号码 -->
+		<if test="pd.hphm != null and pd.hphm != '' ">
+			and illegal_vehicle_information ->> 'hphm' like CONCAT(CONCAT('%',#{pd.hphm}),'%')
+		</if>
+		<!-- 逻辑删除 -->
+		<if test="pd.visibale != null and pd.visibale != '' ">
+			and visibale = #{pd.visibale}
+		</if>
+		<!-- 是否上传 -->
+		<if test="pd.print_jds != null and pd.print_jds != '' ">
+			and print_jds = #{pd.print_jds}
+		</if>
+		
+		<if test="pd.starttime!=null and pd.starttime!=''"><!-- 开始时间检索 -->
+			and wfsj &gt;= concat(#{pd.starttime},' 00:00:00')::TIMESTAMP
+		</if>
+		<if test="pd.endtime!=null and pd.endtime!=''"><!-- 结束时间检索 -->
+			and wfsj &lt;= concat(#{pd.endtime},' 23:59:59')::TIMESTAMP 
+		</if>
+		and visibale = 1
+		order by wfsj 
+		
+	</select>
+	
+	<!-- 根据现场处罚id 获取现场处罚信息 -->
+	<select id="getOnsitePunishmentByID" parameterType="pd" resultType="pd">
+		select 
+		<include refid="field"></include>
+		from <include refid="tableName"></include>  
+		where onsite_punishment_id = #{onsite_punishment_id}
+	</select>
+	
+	<!-- 现场处罚批量修改 -->
+	<update id="updateOnsitePunishmentBatch" parameterType="pd">
+		update 
+		<include refid="tableName"></include> 
+		<set>
+			<if test="state != null  ">
+				visibale = #{visibale}::integer,
+			</if>
+			<if test="print_jds != null  ">
+				print_jds = #{print_jds}::integer,
+			</if>
+		</set>
+		where onsite_punishment_id in 
+		<foreach item="item" index="index" collection="onsitePunishmentIdList" open="(" separator="," close=")">
+    			#{onsitePunishmentIdList[${index}]}
+    	</foreach>
+	</update>
+	
+	<!-- 根据现场处罚id数组 获取现场处罚信息 -->
+	<select id="getPoliceOnsitePunishmentListByIdList" parameterType="pd" resultType="pd">
+		select 
+		onsite_punishment_id,punishment_type,upload_message,punishment_police ->> 'policeUnitCode' as policeUnitCode
+		from <include refid="tableName"></include>  
+		where 1=1
+			and onsite_punishment_id in 
+			<foreach item="item" index="index" collection="onsitePunishmentIdList" open="(" separator="," close=")">
+	    			#{onsitePunishmentIdList[${index}]}
+	    	</foreach>
+	</select>
+	<!-- 获取未上传任务 -->
+	<select id="getOnsitePunishmentIdListPrint_jds0" parameterType="pd" resultType="java.lang.String">
+		select 
+		onsite_punishment_id
+		from <include refid="tableName"></include>  
+		where 1=1
+		and print_jds = 0
+	</select>
+	
+</mapper>
