@@ -227,6 +227,43 @@
 		<include refid="insertvalue"></include>
 			)
 	</insert>
-	
+
+	<!--人员导出-->
+	<select id="getpByT" parameterType="pd" resultType="pd">
+		select
+		"check_id",
+		"optargetId",
+		"checkException",
+		"policeName",
+		"policeCode",
+		"policeIdcard",
+		"locationId",
+		"locationName",
+		"imei",
+		"name",
+		"sex",
+		"idcard",
+		"address",
+		"cardCompareResults",
+		"carInfo",
+		"licensePlateNo",
+		"tel",
+		"fromAddr",
+		"toAddr",
+		"inorout",
+		"tiwen",
+		"txrs",
+		to_char(updatetime,'YYYY-MM-DD HH24:MI:SS') AS updatetime
+		from <include refid="tableName"></include>
+		where 1=1
+		<if test="starttime!=null and starttime!=''"><!-- 开始时间检索 -->
+			and updatetime &gt;= concat(#{starttime},':00:00')::TIMESTAMP
+		</if>
+		<if test="endtime!=null and endtime!=''"><!-- 结束时间检索 -->
+			and updatetime &lt;= concat(#{endtime},':59:59')::TIMESTAMP
+		</if>
+
+	</select>
+
 
 </mapper>

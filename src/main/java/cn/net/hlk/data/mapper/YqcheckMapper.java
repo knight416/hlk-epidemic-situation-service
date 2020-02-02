@@ -24,4 +24,14 @@ public interface YqcheckMapper {
 	 * @return void
 	 */
 	void insertYqcheck(PageData pd);
+
+	/**
+	 * @Title getpByT
+	 * @Description 疫情导出
+	 * @author 张泽恒
+	 * @date 2020/2/2 17:49
+	 * @param [pd]
+	 * @return java.util.List<cn.net.hlk.data.pojo.PageData>
+	 */
+	List<PageData> getpByT(PageData pd);
 }

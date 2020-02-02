@@ -1,32 +1,35 @@
 package cn.net.hlk.data.service.serviceimpl;
 
-import cn.net.hlk.data.mapper.OnsitePunishmentMapper;
+import cn.net.hlk.data.config.FileUploadProperteis;
 import cn.net.hlk.data.mapper.YqcheckMapper;
-import cn.net.hlk.data.pojo.Page;
 import cn.net.hlk.data.pojo.PageData;
 import cn.net.hlk.data.pojo.ReasonBean;
 import cn.net.hlk.data.pojo.ResponseBodyBean;
-import cn.net.hlk.data.service.OnsitePunishmentService;
 import cn.net.hlk.data.service.YqcheckService;
-import cn.net.hlk.util.CustomConfigUtil;
+import cn.net.hlk.util.FileUtil;
+import cn.net.hlk.util.PoiExcelDownLoad;
 import cn.net.hlk.util.ResponseUtil;
 import cn.net.hlk.util.StringUtil2;
 import cn.net.hlk.util.UuidUtil;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -42,6 +45,8 @@ public class YqcheckServiceImpl extends BaseServiceImple implements YqcheckServi
 
 	@Autowired
 	private YqcheckMapper yqcheckMapper;
+	@Autowired
+	private FileUploadProperteis fileUploadProperteis;
 
 
 	/**
@@ -140,6 +145,147 @@ public class YqcheckServiceImpl extends BaseServiceImple implements YqcheckServi
 			responseBodyBean.setReason(reasonBean);
 		}
 		return responseBodyBean;
+	}
+
+	/**
+	 * @Title PersonalExport
+	 * @Description 人员导出
+	 * @author 张泽恒
+	 * @date 2020/2/2 17:29
+	 * @param [pd]
+	 * @param response
+	 * @return cn.net.hlk.data.pojo.PageData
+	 */
+	@Override
+	public PageData PersonalExport(PageData pd, HttpServletResponse response) {
+
+		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
+		ReasonBean reasonBean = null;
+		PageData resData = new PageData();
+		PageData resultPd = new PageData();
+		try {
+			String starttime = pd.getString("starttime");
+			String endtime = pd.getString("endtime");
+
+			//保存时的文件名
+			DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+			Calendar calendar = Calendar.getInstance();
+			String dateName = df.format(calendar.getTime())+"Export.xls";
+
+			if(StringUtil2.isNotEmpty(starttime) || StringUtil2.isNotEmpty(endtime) ){
+				dateName = starttime+"-"+endtime+"Export.xls";
+			}
+
+			//虚拟路径存储
+			String realPath = fileUploadProperteis.getUploadFolder();
+			String filePath = realPath + File.separator+ "ExcelFile" + File.separator+ "Export"+ File.separator+dateName;
+			FileUtil.createDir(filePath);
+			//文件地址
+			OutputStream out = new FileOutputStream(filePath);
+			response.setContentType("application/vnd.ms-excel;chartset=utf-8");
+			response.setHeader("Content-Disposition", "attachment;filename="+dateName + ".xls");
+			out = response.getOutputStream();
+
+			//获取管控人员信息利用poiModel
+			List<PageData> pdList = new ArrayList<PageData>();
+			pdList = yqcheckMapper.getpByT(pd);
+
+			PoiExcelDownLoad<PageData> poid = new PoiExcelDownLoad<PageData>();
+			//标题list
+			List<String> headersList = new ArrayList<String>();
+			headersList.add("id");//标题
+			// headersList.add("id");//注释
+			headersList.add("档案id");
+			// headersList.add("档案id");
+			headersList.add("核查是否异常");
+			// headersList.add("核查是否异常");
+			headersList.add("警员姓名");
+			// headersList.add("警员姓名");
+			headersList.add("警员警号");
+			// headersList.add("警员警号");
+			headersList.add("警员身份证号");
+			// headersList.add("警员身份证号");
+			headersList.add("卡口编号");
+			// headersList.add("卡口编号");
+			headersList.add("卡口名称");
+			// headersList.add("卡口名称");
+			headersList.add("设备id");
+			// headersList.add("设备id");
+
+			headersList.add("姓名");
+			// headersList.add("姓名");
+			headersList.add("性别");
+			// headersList.add("性别");
+			headersList.add("身份证号");
+			// headersList.add("身份证号");
+			headersList.add("地址");
+			// headersList.add("地址");
+			headersList.add("二代证比对结果");
+			// headersList.add("二代证比对结果");
+			headersList.add("车牌号码");
+			// headersList.add("车牌号码");
+			headersList.add("车牌");
+			// headersList.add("车牌");
+			headersList.add("电话");
+			// headersList.add("电话");
+			headersList.add("从何处来");
+			// headersList.add("从何处来");
+			headersList.add("入城/出城");
+			// headersList.add("入城/出城");
+			headersList.add("体温");
+			// headersList.add("体温");
+			headersList.add("同行人数");
+			// headersList.add("同行人数");
+			headersList.add("时间");
+			// headersList.add("时间");
+
+			//读取顺序list
+			List<String> readList = new ArrayList<String>();
+			readList.add("check_id");
+			readList.add("optargetId");
+			readList.add("checkException");
+			readList.add("policeName");
+			readList.add("policeCode");
+			readList.add("policeIdcard");
+			readList.add("locationId");
+			readList.add("locationName");
+			readList.add("imei");
+			readList.add("name");
+			readList.add("sex");
+			readList.add("idcard");
+			readList.add("address");
+			readList.add("cardCompareResults");
+			readList.add("licensePlateNo");
+			readList.add("tel");
+			readList.add("fromAddr");
+			readList.add("toAddr");
+			readList.add("inorout");
+			readList.add("tiwen");
+			readList.add("txrs");
+			readList.add("updatetime");
+
+
+			Collection<PageData> dataset = pdList;
+			try {
+				poid.exportExcel("导出",headersList, dataset, out,readList);
+				out.close();
+				resData.put("path","/upload"+ File.separator+ "ExcelFile"+ File.separator+ "Export"+File.separator+dateName);
+				status = HttpStatus.OK.value();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+				reasonBean = ResponseUtil.getReasonBean("Exception", e.getClass().getSimpleName());
+			} catch (IOException e) {
+				e.printStackTrace();
+				reasonBean = ResponseUtil.getReasonBean("Exception", e.getClass().getSimpleName());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			reasonBean = ResponseUtil.getReasonBean("Exception", e.getClass().getSimpleName());
+		}
+		resultPd.put("resData", resData);
+		resultPd.put("status", status);
+		resultPd.put("reasonBean", reasonBean);
+		return resultPd;
 	}
 
 }

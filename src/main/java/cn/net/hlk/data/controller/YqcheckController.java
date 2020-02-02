@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -84,5 +85,49 @@ public class YqcheckController extends BaseController{
 			return responseBodyBean;
 		}
 	}
+
+	@SuppressWarnings("all")
+	@ApiOperation(value = "人员导出", notes = "人员导出")
+	@ApiImplicitParams({
+	})
+	@ApiResponses({
+			@ApiResponse(code=200,message="指示客服端的请求已经成功收到，解析，接受"),
+			@ApiResponse(code=201,message="资源已被创建"),
+			@ApiResponse(code=401,message="未授权"),
+			@ApiResponse(code=400,message="请求参数没填好"),
+			@ApiResponse(code=403,message="拒绝访问"),
+			@ApiResponse(code=404,message="请求路径没有或页面跳转路径不对"),
+			@ApiResponse(code=406,message="不是指定的数据类型"),
+			@ApiResponse(code=500,message="服务器内部错误")
+	})
+	@RequestMapping(value="/PersonalExport", method=RequestMethod.GET)
+	public  @ResponseBody ResponseBodyBean PersonalExport(@RequestParam String starttime,@RequestParam String endtime,@RequestParam String starttimeh,@RequestParam String endtimeh) {
+		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
+		ResponseBodyBean responseBodyBean = new ResponseBodyBean();
+		ReasonBean reasonBean = null;
+		Object result = null;
+		PageData resData = new PageData();
+		PageData resultPd = new PageData();
+		try{
+			PageData pd = new PageData();
+			pd.put("starttime",starttime+" "+starttimeh);
+			pd.put("endtime",endtime+" "+endtimeh);
+
+			resultPd = yqcheckService.PersonalExport(pd,response);
+		}catch(Exception e){
+			e.printStackTrace();
+			reasonBean = ResponseUtil.getReasonBean("Exception", e.getClass().getSimpleName());
+			resultPd.put("resData", resData);
+			resultPd.put("status", status);
+			resultPd.put("reasonBean", reasonBean);
+		}finally {
+			result = resultPd.get("resData");
+			responseBodyBean.setResult(result);
+			response.setStatus(Integer.valueOf(resultPd.get("status").toString()));
+			responseBodyBean.setReason((ReasonBean)resultPd.get("reasonBean"));
+			return responseBodyBean;
+		}
+	}
+
 
 }

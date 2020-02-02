@@ -142,49 +142,49 @@ public class PoiExcelDownLoad<T> {
 			int dossier_custody_category = 0;
 			int alarmcount = 0;
 			
-			for (short i = 0,j=0; i < headers.size(); i+=1,j++) {
-				if(i < headers.size()/2){
-					HSSFCell cell = row.createCell(j);
-					cell.setCellStyle(style);
-					HSSFRichTextString text = new HSSFRichTextString(headers.get(i));
-					cell.setCellValue(text);
-					//判断合并状态
-					if(headers.get(i).contains("案件")){
-						casecount = i;
-					}
-					if(headers.get(i).contains("异常")){
-						alarmcount = i;
-					}
-//					addComment(patriarch, cell,headers.get(i));
-				}else{
-					HSSFCell cell = row2.createCell(j-headers.size()/2);
-					cell.setCellStyle(style);
-					HSSFRichTextString text = new HSSFRichTextString(headers.get(i));
-					cell.setCellValue(text);
-//					addComment(patriarch, cell,headers.get(i));
-					if(headers.get(i).contains("刑事案卷")){
-						case_type = j-headers.size()/2;
-					}
-					if(headers.get(i).contains("在库")){
-						dossier_custody_category = j-headers.size()/2;
-					}
-				}
-			}
-			sheet.addMergedRegion(new CellRangeAddress(0,1,0, 0));//序号
-			sheet.addMergedRegion(new CellRangeAddress(0,1,1, 1));//单位
-			sheet.addMergedRegion(new CellRangeAddress(0,1,2, 2));//卷宗
-			if(casecount != 0){
-				sheet.addMergedRegion(new CellRangeAddress(0,1,casecount, casecount));//案件
-			}
-			if(case_type != 0){
-				sheet.addMergedRegion(new CellRangeAddress(0,0,case_type, case_type+2));//类型
-			}
-			if(dossier_custody_category != 0){
-				sheet.addMergedRegion(new CellRangeAddress(0,0,dossier_custody_category, dossier_custody_category+1));//状态
-			}
-			if(alarmcount != 0){
-				sheet.addMergedRegion(new CellRangeAddress(0,1,alarmcount, alarmcount));//异常
-			}
+// 			for (short i = 0,j=0; i < headers.size(); i+=1,j++) {
+// 				if(i < headers.size()/2){
+// 					HSSFCell cell = row.createCell(j);
+// 					cell.setCellStyle(style);
+// 					HSSFRichTextString text = new HSSFRichTextString(headers.get(i));
+// 					cell.setCellValue(text);
+// 					//判断合并状态
+// 					if(headers.get(i).contains("案件")){
+// 						casecount = i;
+// 					}
+// 					if(headers.get(i).contains("异常")){
+// 						alarmcount = i;
+// 					}
+// //					addComment(patriarch, cell,headers.get(i));
+// 				}else{
+// 					HSSFCell cell = row2.createCell(j-headers.size()/2);
+// 					cell.setCellStyle(style);
+// 					HSSFRichTextString text = new HSSFRichTextString(headers.get(i));
+// 					cell.setCellValue(text);
+// //					addComment(patriarch, cell,headers.get(i));
+// 					if(headers.get(i).contains("刑事案卷")){
+// 						case_type = j-headers.size()/2;
+// 					}
+// 					if(headers.get(i).contains("在库")){
+// 						dossier_custody_category = j-headers.size()/2;
+// 					}
+// 				}
+// 			}
+// 			sheet.addMergedRegion(new CellRangeAddress(0,1,0, 0));//序号
+// 			sheet.addMergedRegion(new CellRangeAddress(0,1,1, 1));//单位
+// 			sheet.addMergedRegion(new CellRangeAddress(0,1,2, 2));//卷宗
+// 			if(casecount != 0){
+// 				sheet.addMergedRegion(new CellRangeAddress(0,1,casecount, casecount));//案件
+// 			}
+// 			if(case_type != 0){
+// 				sheet.addMergedRegion(new CellRangeAddress(0,0,case_type, case_type+2));//类型
+// 			}
+// 			if(dossier_custody_category != 0){
+// 				sheet.addMergedRegion(new CellRangeAddress(0,0,dossier_custody_category, dossier_custody_category+1));//状态
+// 			}
+// 			if(alarmcount != 0){
+// 				sheet.addMergedRegion(new CellRangeAddress(0,1,alarmcount, alarmcount));//异常
+// 			}
 			
 		}else{
 			for (short i = 0,j=0; i < headers.size(); i+=1,j++) {
@@ -210,11 +210,11 @@ public class PoiExcelDownLoad<T> {
 			// 利用反射，根据javabean属性的先后顺序，动态调用getXxx()方法得到属性值
 			for (int i = 0;i<readList.size();i++) {
 				Object value = t.get(readList.get(i));
-				if(!"dataQuery".equals(exporttype)){
-					if( rc == dataset.size()-1 && (i==0 || i==1)){
-						value = "总计";
-					}
-				}
+				// if(!"dataQuery".equals(exporttype)){
+				// 	if( rc == dataset.size()-1 && (i==0 || i==1)){
+				// 		value = "总计";
+				// 	}
+				// }
 				//当key为自定义字段时
 				HSSFCell cell = row.createCell(i);
 				cell.setCellStyle(style2);
@@ -292,9 +292,9 @@ public class PoiExcelDownLoad<T> {
 			}
 			rc++;
 		}
-		if(!"dataQuery".equals(exporttype)){
-			sheet.addMergedRegion(new CellRangeAddress(index,index,0, 1));//案件
-		}
+		// if(!"dataQuery".equals(exporttype)){
+		// 	sheet.addMergedRegion(new CellRangeAddress(index,index,0, 1));//案件
+		// }
 		if(response != null){
 			try {
 				String downFileName = new String("监控日志");
