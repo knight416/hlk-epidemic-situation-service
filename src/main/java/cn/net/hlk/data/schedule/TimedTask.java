@@ -14,14 +14,6 @@ import org.springframework.stereotype.Component;
 public class TimedTask {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    @Autowired
-    private OnsitePunishmentMapper onsitePunishmentMapper;
-    @Autowired
-    private OnsitePunishmentService onsitePunishmentService;
-    @Autowired
-    private OffOnsitePunishmentMapper offOnsitePunishmentMapper;
-    @Autowired
-    private RequestUtil requestUtil;
 
     @Value("${scheduled.enable}")
     private String scheduledEnable;
