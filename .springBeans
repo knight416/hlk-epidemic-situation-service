@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beansProjectDescription>
+	<version>1</version>
+	<pluginVersion><![CDATA[3.6.2.me201505141600]]></pluginVersion>
+	<configSuffixes>
+		<configSuffix><![CDATA[xml]]></configSuffix>
+	</configSuffixes>
+	<enableImports><![CDATA[false]]></enableImports>
+	<configs>
+	</configs>
+	<autoconfigs>
+		<config>java:cn.net.hlk.data.controller.VersionController</config>
+		<config>java:cn.net.hlk.data.controller.VehicleController</config>
+	</autoconfigs>
+	<configSets>
+	</configSets>
+</beansProjectDescription>
